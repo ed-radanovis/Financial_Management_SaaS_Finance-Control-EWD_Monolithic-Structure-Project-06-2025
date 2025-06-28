@@ -1,0 +1,184 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Transaction {
+  id            String                   @id @default(uuid())
+  name          String
+  type          TransactionType
+  amount        Decimal                  @db.Decimal(10, 2)
+  category      TransactionCategory
+  subcategory   TransactionSubcategory?  // Campo opcional para subcategoria
+  paymentMethod TransactionPaymentMethod
+  date          DateTime
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
+  userId        String
+}
+
+enum TransactionType {
+  DEPOSIT
+  EXPENSE
+  INVESTMENT
+}
+
+enum TransactionCategory {
+  SALARY
+  EDUCATION
+  FOOD
+  HEALTH
+  HOUSING
+  TRANSPORTATION
+  BUSINESS_EXPENSES
+  PUBLIC_UTILITIES
+  TAXES
+  CREDIT_CARD_BILL
+  BANK_BILLS
+  SUBSCRIPTIONS
+  INSURANCE
+  ENTERTAINMENT
+  TRAVEL
+  UTILITY
+  SHOPPING
+  INVESTMENTS
+  OTHER
+}
+
+enum TransactionSubcategory {
+  MONTHLY_SALARY
+  SALARY_ADVANCE
+  COMMISSIONS
+  BENEFITS
+  PROFIT_SHARING
+  VARIABLE_COMPENSATION
+  INDIRECT_SALARY
+  PRO_LABORE
+  BONUSES
+  REGISTRATION
+  MONTHLY_PAYMENT
+  SCHOOL_SUPPLIES
+  UNIFORM
+  SCHOOL_TRANSPORT
+  SCHOOL_MEALS
+  EXTRACURRICULAR_ACTIVITIES
+  MEALS_OUT
+  FAST_FOOD_DELIVERY
+  SUPERMARKET
+  BUTCHER_SHOP
+  BAKERY
+  FARMERS_MARKET
+  HEALTH_PLANS
+  MEDICAL_CONSULTATIONS_EXAMS
+  PHARMACY
+  HOSPITALIZATIONS
+  DENTIST
+  THERAPY
+  HOME_LOAN
+  RENT
+  CONDOMINIUM
+  LPG
+  MAINTENANCE_REFORMS
+  FURNITURE_APPLIANCES
+  FUEL
+  MAINTENANCE
+  LICENSING
+  PARKING
+  FINES
+  TOLLS
+  TICKETS
+  TRANSPORT_VOUCHERS
+  UBER_TAXIS
+  FIXED_EXPENSES
+  VARIABLE_EXPENSES
+  DIRECT_COSTS
+  INDIRECT_COSTS
+  ELECTRICITY
+  WATER
+  TELEPHONY
+  BASIC_SANITATION
+  MOTOR_VEHICLE_TAX
+  PROPERTY_TAX
+  INDIVIDUAL_INCOME_TAX
+  SALES_TAX
+  RURAL_PROPERTY_TAX
+  INHERITANCE_TAX
+  INTEGRAL
+  MINIMUM_PAYMENT
+  PAYMENT_IN_INSTALLMENTS
+  ANTICIPATION
+  INTEREST_CHARGES
+  AUTOMATIC_DEBIT
+  FULL_ON_TIME
+  FULL_OVERDUE
+  INTERNET
+  MOBILE_PHONE
+  MOBILE_DATA
+  VIDEO_STREAMING
+  MUSIC_STREAMING
+  PAY_TV
+  SOFTWARES
+  GYM
+  LIFE_INSURANCE
+  HOME_INSURANCE
+  AUTO_INSURANCE
+  HEALTH_INSURANCE
+  TRAVEL_INSURANCE
+  FUNERAL_INSURANCE
+  PRIVATE_RETIREMENT_PLAN
+  MOVIE_THEATER
+  THEATER
+  SHOWS_EVENTS
+  MISCELLANEOUS_OUTINGS
+  LOUNGE_BAR
+  NIGHTCLUB
+  PARTY
+  HOBBIES
+  HOSTING
+  TRANSPORT
+  GASTRONOMY
+  LEISURE_ACTIVITIES
+  SMALL_HOUSEHOLD_ITEMS
+  MAINTENANCE_SUPPLIES
+  CLEANING_PRODUCTS
+  OTHER
+  ONLINE_SHOPPING
+  CLOTHING_ACCESSORIES
+  SHOES_FOOTWEAR
+  ELECTRONICS
+  HOME_DECOR
+  BOOKS_STATIONERY
+  GIFTS
+  DEPARTMENT_STORES
+  BEAUTY_PRODUCTS
+  SAVINGS_ACCOUNT
+  STOCKS
+  BANK_CERTIFICATES_OF_DEPOSIT
+  REAL_ESTATE_CREDIT_BONDS
+  INVESTMENT_FUNDS
+  REAL_ESTATE_INVESTMENTS
+  REITS
+  GOVERNMENT_BONDS
+  CRYPTOCURRENCIES
+  SPECIFY
+}
+
+enum TransactionPaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  BANK_TRANSFER
+  BANK_SLIP
+  CASH
+  PIX
+  OTHER
+}
