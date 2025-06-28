@@ -164,7 +164,7 @@ npm run dev
 - [x] &nbsp;&nbsp;&nbsp;Add Prettier Tailwind plugin: Create `.prettierrc.json` with `{"plugins": ["prettier-plugin-tailwindcss"]}`
 - [x] &nbsp;&nbsp;&nbsp;Install Shadcn/UI: `npx shadcn@latest init` and add components like **button**, **table**, **dialog**, etc.
 
-✔️ - Add responsiveness, new layouts for smaller screens, subtle animations (hover, click, color transitions), and a loader. .<br>
+✔️ - Add responsiveness, new layouts for smaller screens, subtle animations (hover, click, color transitions), and a loader.<br>
 ✔️ - Design custom logo and login banner. <br>
 
 ---
@@ -201,10 +201,10 @@ NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL
 
 #### 🔬 Enhancements
 
-✔️ - **AI Integration:** Added OpenAI `(npm i openai@latest)` for report generation with over **100 subcategories**, improving report granularity. Reports are exported as formatted PDFs.
-✔️ - **Timeout Handling:** Implemented timeouts for server actions to enhance reliability.
-✔️ - **Subscription Plans:** Added a semestral plan and adjusted limits (e.g., transaction quotas, basic plan history visibility).
-✔️ - **Testing & Linting:** Set up Husky, Lint-Staged, and Git Commit Msg Linter for conventional commits.
+✔️ - **AI Integration:** Added OpenAI `(npm i openai@latest)` for report generation with over **100 subcategories**, improving report granularity. Reports are exported as formatted PDFs.<br>
+✔️ - **Timeout Handling:** Implemented timeouts for server actions to enhance reliability.<br>
+✔️ - **Subscription Plans:** Added a semestral plan and adjusted limits (e.g., transaction quotas, basic plan history visibility).<br>
+✔️ - **Testing & Linting:** Set up Husky, Lint-Staged, and Git Commit Msg Linter for conventional commits.<br>
 ✔️ - **Cloudflare Tunnel:** Used for testing before deploying (e.g. https://x-apparent-virtue-suggestion.trycloudflare.com).
 
 ---
@@ -237,7 +237,7 @@ NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL
 
 > 📝 Note: Ensure your `.env` file is not committed to the repository. Use `.env.example` to share variable names (e.g., `DATABASE_URL`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`). Deployment may require adjusting the `start` script in `package.json` to `next start -p $PORT` if Render/Netlify requires a specific port. Test the deployed app and verify API routes (e.g., `/api/transactions`) are accessible.
 > <br>
-
+<br>
 <h4 align="center">
   👤 Developed by 
 <h4/>
@@ -245,7 +245,7 @@ NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL
   <tr>
     <td align="center">
       <a href="https://www.linkedin.com/in/edmar-radanovis-0130b611a/">
-        <img src="public\github\Logo_EWD_APEX.png" width="120px;"height="120px;" alt="Logo da EWD Apex"/><br>
+        <img src="public\github\Logo_EWD_APEX.png" width="160px;"height="160px;" alt="Logo da EWD Apex"/><br>
       <sub>
         <b>Edmar Radanovis</b>
       </sub>
@@ -262,7 +262,7 @@ NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL
   <tr>
     <td align="center">
       <a href="https://www.youtube.com/@dicasparadevs">
-        <img src="public\github\logo_FullStackClub.png" width="320px;" height="80px;" alt="Logo Full Stack Club"/><br>
+        <img src="public\github\logo_FullStackClub.png" width="240px;" height="60px;" alt="Logo Full Stack Club"/><br>
       <sub>
         <b>Felipe Rocha • Full Stack Club</b>
       </sub>
@@ -278,7 +278,7 @@ NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL
 <table align="center">
   <tr>
     <td align="center">
-      <img src="public\github\certificado.png" width="280px;" height="180px;" alt="Certificate"/><br>
+      <img src="public\github\certificado.png" width="240px;" height="160px;" alt="Certificate"/><br>
     </td>
   </tr>
 </table>
