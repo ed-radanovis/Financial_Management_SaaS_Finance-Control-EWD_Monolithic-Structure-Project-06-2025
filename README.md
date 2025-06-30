@@ -65,8 +65,10 @@ Finance Control EWD was born from the need for simple, direct and accessible fin
 <br>
 <br>
 <div align="center">
- <a href="https://xxxxxxxx.onrender.com/" >Click here to try it out .. thanks for your interest!</a>
- <p>( 🖱️ Ctrl + click to open in a new tab )</p>
+
+Click here to try it out .. thanks for your interest!  
+( 🖱️ Ctrl + click to open in a new tab or visit [www.financecontrol-ewd.com.br](https://www.financecontrol-ewd.com.br) ).
+
 </div>
  <br>
  <br>
@@ -201,41 +203,46 @@ NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL
 
 #### 🔬 Enhancements
 
-✔️ - **AI Integration:** Added OpenAI `(npm i openai@latest)` for report generation with over **100 subcategories**, improving report granularity. Reports are exported as formatted PDFs.
-✔️ - **Timeout Handling:** Implemented timeouts for server actions to enhance reliability.
-✔️ - **Subscription Plans:** Added a semestral plan and adjusted limits (e.g., transaction quotas, basic plan history visibility).
-✔️ - **Testing & Linting:** Set up Husky, Lint-Staged, and Git Commit Msg Linter for conventional commits.
+✔️ - **AI Integration:** Added OpenAI `(npm i openai@latest)` for report generation with over **100 subcategories**, improving report granularity. Reports are exported as formatted PDFs.<br>
+✔️ - **Timeout Handling:** Implemented timeouts for server actions to enhance reliability.<br>
+✔️ - **Subscription Plans:** Added a semestral plan and adjusted limits (e.g., transaction quotas, basic plan history visibility).<br>
+✔️ - **Testing & Linting:** Set up Husky, Lint-Staged, and Git Commit Msg Linter for conventional commits.<br>
 ✔️ - **Cloudflare Tunnel:** Used for testing before deploying (e.g. https://x-apparent-virtue-suggestion.trycloudflare.com).
 
 ---
 
 #### 🌐 Deploy:
 
-✔️ - Deploy on Render (Recommended - Free Tier):
+✔️ - Deploy on Vercel (Recommended - Free Tier):
 
-- [x] Go to [Render](https://render.com).
-- [x] Create a new web service, connect the repository `https://github.com/repository-created-by-you`.
-- [x] Configure environment variables in Render:
-  - `DATABASE_URL="postgresql://neondb_owner:<your-password>@exx-square-xxxxxxx-a6h2vkqr.us-east-0.aws.neon.tech/FinanceControlEWD?sslmode=require" ` (replace `<your-password>` with your Neon DB password)
+- [x] Go to [Vercel](https://vercel.com).
+      Click **New Project**, then import the Git repository `https://github.com/repository-created-by-you`.
+  - [x] Configure environment variables in Vercel:
+  - `DATABASE_URL="postgresql://neondb_owner:<your-password>@exx-square-xxxxxxx-a6h2vkqr.us-east-0.aws.neon.tech/FinanceControlEWD?sslmode=require"` (replace `<your-password>` with your Neon DB password)
   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=<your-clerk-key>` (from Clerk dashboard)
   - `CLERK_SECRET_KEY=<your-clerk-secret>` (from Clerk dashboard)
-  - `STRIPE_PREMIUM_PLAN_PRICE_ID=<your-stripe-price-id>`
-  - `STRIPE_SECRET_KEY=<your-stripe-secret-key>`
-  - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=<your-stripe-publishable-key>`
-  - `OPENAI_API_KEY=<your-openai-key>` (from OpenAI platform)
-- [x] Set the build command: `npm run build` (or use Render's default for Next.js).
-- [x] Set the start command: `npm run start` (or use Render's default for Next.js).
-- [x] Deploy and access the generated URL (e.g., `https://financecontrol-ewd.onrender.com`).
+  - `STRIPE_PREMIUM_PLAN_PRICE_ID=<your-stripe-price-id>` (premium plan price ID from Stripe)
+  - `STRIPE_SEMESTRAL_PLAN_PRICE_ID=<your-stripe-price-id>` (semestral plan price ID from Stripe)
+  - `STRIPE_SECRET_KEY=<your-stripe-secret-key>` (from Stripe dashboard)
+  - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=<your-stripe-publishable-key>` (from Stripe dashboard)
+  - `STRIPE_WEBHOOK_SECRET=<your-stripe-webhook-secret>` (from Stripe Webhooks in live mode)
+  - `NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL=<your-stripe-customer-portal-url>` (from Stripe Billing in live mode)
+  - `REDIS_URL=<your-redis-url>` (from Upstash, if used)
+  - `# OPENAI_API_KEY=<your-openai-key>` (optional, uncomment and add from OpenAI platform if needed)
+- [x] Set the build command: `npm run build` (Vercel auto-detects Next.js defaults).
+- [x] Set the start command: `npm run start` (Vercel auto-detects Next.js defaults).
+- [x] Deploy and access the generated URL (e.g., `https://<your-domain>.vercel.app` or your custom domain after configuration).
 
-❓ - Optional Deploy on Netlify (Free with Limitations):
+❓ - Optional Deploy on Render (Free Tier):
 
-- [ ] Go to [Netlify](https://netlify.com).
-- [ ] Import the repository `https://github.com/repository-created-by-you`.
-- [ ] Configure environment variables in Netlify (same as above for Render).
-- [ ] Set the build command: `npm run build` (ensure `next build` is configured in `package.json`).
-- [ ] Deploy and access the generated URL.
+- [ ] Go to [Render](https://render.com).
+- [ ] Create a new web service, connect the repository `https://github.com/repository-created-by-you`.
+- [ ] Configure environment variables in Render (same as above for Vercel).
+- [ ] Set the build command: `npm run build`.
+- [ ] Set the start command: `npm run start` (or adjust to `next start -p $PORT` if required).
+- [ ] Deploy and access the generated URL (e.g., `https://<your-domain>.onrender.com`).
 
-> 📝 Note: Ensure your `.env` file is not committed to the repository. Use `.env.example` to share variable names (e.g., `DATABASE_URL`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`). Deployment may require adjusting the `start` script in `package.json` to `next start -p $PORT` if Render/Netlify requires a specific port. Test the deployed app and verify API routes (e.g., `/api/transactions`) are accessible.
+> 📝 Note: Ensure your `.env` file is not committed to the repository. Use `.env.example` to share variable names (e.g., `DATABASE_URL`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`). Deployment may require adjusting the start script in `package.json` to `next start -p $PORT` if Render requires a specific port. Test the deployed app and verify API routes (e.g., `/api/transactions`) are accessible.
 > <br>
 
 <h4 align="center">
