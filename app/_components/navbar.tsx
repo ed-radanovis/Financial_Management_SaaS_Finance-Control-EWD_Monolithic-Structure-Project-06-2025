@@ -144,7 +144,7 @@ const Navbar = ({ className }: { className?: string }) => {
 				<div className="flex items-center">
 					<div className="flex h-[60px] w-[350px] gap-2">
 						<Image
-							src="/logo.png"
+							src="/logo_navbar.png"
 							width={120}
 							height={60}
 							alt="Finance Control EWD"
