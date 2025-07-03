@@ -211,7 +211,7 @@ NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL
 
 ---
 
-#### 🌐 Deploy:
+#### 🚀🌐 Deploy:
 
 ✔️ - Deploy on Vercel (Recommended - Free Tier):
 
@@ -244,7 +244,8 @@ NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL
 
 > 📝 Note: Ensure your `.env` file is not committed to the repository. Use `.env.example` to share variable names (e.g., `DATABASE_URL`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`). Deployment may require adjusting the start script in `package.json` to `next start -p $PORT` if Render requires a specific port. Test the deployed app and verify API routes (e.g., `/api/transactions`) are accessible.
 > <br>
-<br>
+> <br>
+
 <h4 align="center">
   👤 Developed by 
 <h4/>
