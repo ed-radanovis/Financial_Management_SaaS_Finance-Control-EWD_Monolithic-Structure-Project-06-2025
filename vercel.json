@@ -1,8 +1,14 @@
 {
+  "builds": [
+    {
+      "src": "app/api/webhooks/stripe/route.ts",
+      "use": "@vercel/next"
+    }
+  ],
   "routes": [
     {
       "src": "/api/webhooks/stripe",
-      "dest": "/app/api/webhooks/stripe/route.ts"
+      "dest": "api/webhooks/stripe/route.ts"
     }
   ]
 }
