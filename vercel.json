@@ -1,8 +1,0 @@
-{
-  "routes": [
-    {
-      "src": "/api/webhooks/stripe",
-      "dest": "app/api/webhooks/stripe/route.ts"
-    }
-  ]
-}
