@@ -289,7 +289,7 @@ const processWebhookDirectly = async (event: Stripe.Event) => {
 
 		case "payment_intent.succeeded": {
 			console.log("Payment intent succeeded:", event.data.object);
-			// Adicione lógica específica aqui se necessário (ex.: registrar transação)
+			// Adicione lógica específica aqui se necessário
 			break;
 		}
 	}
@@ -318,13 +318,11 @@ export const POST = async (request: Request) => {
 		return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
 	}
 
-	// check if Redis can be reactivated
 	if (isFallbackMode && nextMonthResetDate && new Date() >= nextMonthResetDate) {
 		isFallbackMode = false;
 		nextMonthResetDate = null;
 	}
 
-	// enqueue in Redis unless in fallback mode
 	if (!isFallbackMode) {
 		try {
 			await webhookQueue.add({ event });
@@ -346,21 +344,20 @@ export const POST = async (request: Request) => {
 			}
 		}
 	} else {
-		// fallback mode: process without Redis
 		await processWebhookDirectly(event);
 	}
 
 	return NextResponse.json({ received: true });
 };
 
-// process up to 5 jobs simultaneously
+// process up to 5 jobs simultaneously (restaurado)
 webhookQueue.process(5, async (job) => {
 	const { event } = job.data;
 
 	switch (event.type) {
 		case "invoice.paid": {
 			const invoice = event.data.object as Stripe.Invoice;
-			const subscriptionId = invoice.subscription as string | null; // allow null
+			const subscriptionId = invoice.subscription as string | null;
 
 			if (!subscriptionId) {
 				return;
@@ -368,7 +365,6 @@ webhookQueue.process(5, async (job) => {
 
 			const customerId = invoice.customer as string;
 
-			// get subscription details
 			const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 			const clerkUserId = subscription.metadata.clerk_user_id;
 
@@ -376,10 +372,8 @@ webhookQueue.process(5, async (job) => {
 				throw new Error("Clerk user ID not found in subscription metadata");
 			}
 
-			// get the price ID used in the subscription
 			const priceId = subscription.items.data[0].price.id;
 
-			// determines the plan based on the Price ID
 			let planType = null;
 			if (priceId === process.env.STRIPE_PREMIUM_PLAN_PRICE_ID) {
 				planType = "premium-mensal";
@@ -387,7 +381,6 @@ webhookQueue.process(5, async (job) => {
 				planType = "premium-semestral";
 			}
 
-			// update user in Clerk
 			await clerkClient.users.updateUser(clerkUserId, {
 				privateMetadata: {
 					stripeCustomerId: customerId,
@@ -422,8 +415,20 @@ webhookQueue.process(5, async (job) => {
 
 		case "payment_intent.succeeded": {
 			console.log("Payment intent succeeded:", event.data.object);
-			// Adicione lógica específica aqui se necessário (ex.: registrar transação)
+			// Adicione lógica específica aqui se necessário
 			break;
 		}
 	}
 });
+
+// Adicionado para forçar dinamismo
+export async function GET(req: Request) {
+	const { searchParams } = new URL(req.url);
+	const name = searchParams.get("name") || "Usuário";
+	return NextResponse.json(
+		{ message: `Webhook Teste OK, ${name}!` },
+		{ status: 200 },
+	);
+}
+
+export const dynamic = "force-dynamic"; // Garante que a rota seja tratada como dinâmica
