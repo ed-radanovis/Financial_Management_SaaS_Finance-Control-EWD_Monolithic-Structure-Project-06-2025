@@ -6,9 +6,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	output: "standalone",
-	experimental: {
-		serverComponents: true,
-	},
 };
 
 export default nextConfig;
