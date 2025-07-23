@@ -115,7 +115,7 @@ const TimeSelect: React.FC<TimeSelectProps> = ({
 							value={month}
 						>
 							<SelectTrigger
-								className={`w-full transform text-base font-semibold transition-colors duration-500 ease-in-out md:text-xl xl:w-[180px] xl:text-base ${className}`}
+								className={`w-full transform text-base font-semibold shadow-md shadow-gray-800 transition-colors duration-500 ease-in-out md:text-xl xl:w-[180px] xl:text-base ${className}`}
 							>
 								<span className="truncate">{getMonthLabel(month)}</span>
 							</SelectTrigger>
@@ -136,7 +136,7 @@ const TimeSelect: React.FC<TimeSelectProps> = ({
 							value={year}
 						>
 							<SelectTrigger
-								className={`w-full transform text-base font-semibold transition-colors duration-500 ease-in-out md:text-xl xl:w-[90px] xl:text-sm ${className}`}
+								className={`w-full transform text-base font-semibold shadow-md shadow-gray-800 transition-colors duration-500 ease-in-out md:text-xl xl:w-[90px] xl:text-sm ${className}`}
 							>
 								<SelectValue placeholder="Ano" />
 							</SelectTrigger>

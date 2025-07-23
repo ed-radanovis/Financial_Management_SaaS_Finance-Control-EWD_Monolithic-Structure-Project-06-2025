@@ -78,11 +78,11 @@ const TransactionsPage = async () => {
 					</h1>
 					<AddTransactionButton
 						userCanAddTransaction={userCanAddTransaction}
-						className="mr-0 text-xs sm:mr-4 sm:mt-3 md:mr-4 md:mt-3 md:text-sm xl:mr-4"
+						className="mr-0 text-xs shadow-md shadow-gray-700 transition-all duration-500 ease-in-out hover:shadow-gray-500 sm:mr-4 sm:mt-3 md:mr-4 md:mt-3 md:text-sm xl:mr-4"
 					/>
 				</div>
 				{/* transactions table */}
-				<ScrollArea className="h-[calc(100vh-265px)] sm:h-[calc(100vh-220px)] md:h-[calc(100vh-230px)] xl:h-full">
+				<ScrollArea className="h-[calc(100vh-265px)] shadow-md shadow-gray-800 sm:h-[calc(100vh-220px)] md:h-[calc(100vh-230px)] xl:h-full">
 					<div className="custom-width-interval">
 						<DataTable
 							columns={transactionColumns}

@@ -12,6 +12,13 @@ import {
 } from "@/app/_constants/transactions";
 import { TransactionType } from "@prisma/client";
 
+class NoTransactionsError extends Error {
+	constructor(message = "No transactions found for the specified month.") {
+		super(message);
+		this.name = "NoTransactionsError";
+	}
+}
+
 // example report if API is not configured
 const DUMMY_REPORT = `...`;
 
@@ -43,16 +50,21 @@ export const generateAiReport = async ({
 	}
 
 	// get transactions for the month and year
+	const startDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+	const endDate = new Date(parseInt(year), parseInt(month), 0);
+
 	const transactions = await db.transaction.findMany({
 		where: {
+			userId: userId,
 			date: {
-				gte: new Date(`${year}-${month}-01`),
-				lt: new Date(`${year}-${month}-31`),
+				gte: startDate,
+				lte: endDate,
 			},
 		},
 	});
+
 	if (transactions.length === 0) {
-		throw new Error("No transactions found for the specified month.");
+		throw new NoTransactionsError();
 	}
 
 	// sum up inflows (Deposits + Investments) and outflows (Expenses)
@@ -78,10 +90,16 @@ export const generateAiReport = async ({
 					: "";
 			return (
 				`- **Data:** ${transaction.date.toLocaleDateString("pt-BR")}, ` +
-				`**Tipo:** ${TRANSACTION_TYPE_OPTIONS.find((option) => option.value === transaction.type)?.label}, ` +
+				`**Tipo:** ${
+					TRANSACTION_TYPE_OPTIONS.find(
+						(option) => option.value === transaction.type,
+					)?.label
+				}, ` +
 				`**Valor:** R$ ${transaction.amount.toFixed(2).replace(".", ",")}, ` +
 				`**Categoria:** ${TRANSACTION_CATEGORY_LABELS[transaction.category]}, ` +
-				`**Método de Pagamento:** ${TRANSACTION_PAYMENT_METHOD_LABELS[transaction.paymentMethod]}` +
+				`**Método de Pagamento:** ${
+					TRANSACTION_PAYMENT_METHOD_LABELS[transaction.paymentMethod]
+				}` +
 				subcategoryLabel
 			);
 		})
@@ -96,16 +114,16 @@ export const generateAiReport = async ({
 	const financialSummary = `
 ### Sumário Financeiro:
 
- - **Entradas:**
+  - **Entradas:**
   - Depósitos: R$ ${totalDeposits.toFixed(2).replace(".", ",")}
   - Investimentos: R$ ${totalInvestments.toFixed(2).replace(".", ",")}
-   - **Total Entradas:** R$ ${totalEntradas.toFixed(2).replace(".", ",")}
+    - **Total Entradas:** R$ ${totalEntradas.toFixed(2).replace(".", ",")}
 
- - **Saídas:**
+  - **Saídas:**
   - Despesas: R$ ${totalExpenses.toFixed(2).replace(".", ",")}
-   - **Total Saídas:** R$ ${totalSaidas.toFixed(2).replace(".", ",")}
+    - **Total Saídas:** R$ ${totalSaidas.toFixed(2).replace(".", ",")}
 
- - **Saldo Final:** R$ ${saldoFinal.toFixed(2).replace(".", ",")}
+  - **Saldo Final:** R$ ${saldoFinal.toFixed(2).replace(".", ",")}
 `;
 
 	const content = `Gere um relatório com insights sobre as minhas finanças. Abaixo estão as transações apresentadas como uma lista:
@@ -143,7 +161,11 @@ Inclua também uma análise das entradas, saídas, saldo e as categorias mais ga
 		);
 		return response.data.choices[0].message.content;
 	} catch (error) {
-		console.error("Erro ao chamar a API do Gemini:", error);
-		throw new Error("Erro ao gerar relatório. Tente novamente mais tarde.");
+		if (error instanceof NoTransactionsError) {
+			throw error;
+		} else {
+			console.error("Erro ao gerar relatório. Tente novamente mais tarde:", error);
+			throw new Error("Erro ao gerar relatório. Tente novamente mais tarde.");
+		}
 	}
 };

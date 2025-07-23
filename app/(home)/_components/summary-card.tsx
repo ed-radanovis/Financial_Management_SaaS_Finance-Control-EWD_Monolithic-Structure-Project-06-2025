@@ -31,8 +31,8 @@ const SummaryCard = ({
 		<Card
 			className={`${
 				size === "large"
-					? "bg-white bg-opacity-4 py-1 xl:bg-opacity-4"
-					: "bg-white bg-opacity-2 xl:bg-opacity-2"
+					? "bg-white bg-opacity-4 py-1 shadow-md shadow-gray-800 xl:bg-opacity-4"
+					: "bg-white bg-opacity-2 shadow-md shadow-gray-800 xl:bg-opacity-2"
 			} ${className || ""} w-full xl:w-auto`}
 		>
 			<CardHeader className="flex flex-col justify-center gap-2 p-2 xl:flex-row xl:items-center xl:justify-start xl:gap-4 xl:p-4 xl:pt-0">
@@ -70,7 +70,7 @@ const SummaryCard = ({
 					{size === "large" && (
 						<AddTransactionButton
 							userCanAddTransaction={userCanAddTransaction}
-							className="mt-4 xl:mt-0"
+							className="mt-4 shadow-md shadow-gray-700 transition-all duration-500 ease-in-out hover:shadow-gray-500 xl:mt-0"
 						/>
 					)}
 				</div>

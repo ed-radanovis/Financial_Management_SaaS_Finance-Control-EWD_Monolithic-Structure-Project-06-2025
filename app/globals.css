@@ -120,7 +120,6 @@ body {
 	.custom-active-transition {
 		transition-property: transform, opacity;
 		transition-duration: 100ms;
-		/* transition-timing-function: ease-in-out; */
 	}
 
 }

@@ -147,13 +147,14 @@ const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
 				if (!open) {
 					setReport(null);
 					setReportGenerated(false);
+					setShowNoTransactionsDialog(false);
 				}
 			}}
 		>
 			<DialogTrigger asChild>
 				<Button
 					variant="ghost"
-					className="custom-active-transition w-[96vw] border text-sm font-semibold transition-colors duration-500 ease-in-out active:scale-105 active:text-primary md:text-xl lg:text-2xl xl:w-auto xl:text-base"
+					className="custom-active-transition w-[96vw] border text-sm font-semibold shadow-md shadow-gray-800 transition-colors duration-500 ease-in-out active:scale-105 active:text-primary md:text-xl lg:text-2xl xl:w-auto xl:text-base"
 				>
 					Gerar relatório com IA
 					<BotIcon />
@@ -230,7 +231,7 @@ const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
 									Nenhuma transação encontrada para o mês especificado.
 								</span>
 								<span className="block break-words">
-									É necessário ao menos 01 transação para que seja possível a emissão do
+									É necessário ao menos UMA transação para que seja possível a emissão do
 									relatório.
 								</span>
 							</DialogDescription>

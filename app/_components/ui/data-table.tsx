@@ -73,7 +73,9 @@ export function DataTable<TData, TValue>({
 						<div
 							key={row.id}
 							className={`bg-card transition-colors ${
-								selectedRowId === row.id ? "bg-muted/50" : "bg-transparent"
+								selectedRowId === row.id
+									? "bg-muted/50"
+									: "bg-transparent shadow-md shadow-gray-800"
 							}`}
 							onTouchStart={() => setSelectedRowId(row.id)}
 						>

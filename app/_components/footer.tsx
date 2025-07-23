@@ -13,7 +13,7 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
 	return (
 		<footer
 			className={clsx(
-				"mx-2 flex h-auto flex-col items-center justify-between gap-2 rounded-tl-md rounded-tr-md border bg-gray-400 bg-opacity-5 px-4 pb-4 pt-2 text-white md:mx-2 md:h-12 md:flex-row md:gap-4 md:px-0 md:pb-8 md:pt-10 xl:mx-6 xl:gap-0",
+				"mx-2 flex h-auto flex-col items-center justify-between gap-1 rounded-tl-md rounded-tr-md border bg-gray-400 bg-opacity-5 px-4 pb-4 pt-2 text-white shadow-md shadow-gray-800 md:mx-2 md:h-12 md:flex-row md:gap-4 md:px-0 md:pb-8 md:pt-10 xl:mx-6 xl:gap-0",
 				className,
 			)}
 		>
@@ -42,7 +42,7 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
 					{totalUsers}
 				</span>
 			</div>
-			<div className="flex flex-col items-center gap-2 md:mr-5 md:flex-row md:gap-6">
+			<div className="flex flex-col items-center md:mr-5 md:flex-row md:gap-6">
 				<a
 					href="https://wa.me/5535984256707"
 					target="_blank"

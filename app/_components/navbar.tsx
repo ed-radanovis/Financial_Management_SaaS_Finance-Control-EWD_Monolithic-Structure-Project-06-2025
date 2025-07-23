@@ -67,29 +67,32 @@ const Navbar = ({ className }: { className?: string }) => {
 		return (
 			<nav
 				className={clsx(
-					"relative mx-2 mt-4 flex flex-col items-center justify-between rounded-md border border-solid px-1 py-3 md:px-6 md:py-0 md:pb-1",
+					"relative mx-2 mt-4 flex flex-col items-center justify-between rounded-md border border-solid px-1 py-3 shadow-md shadow-gray-800 md:px-6 md:py-0 md:pb-1",
 					className,
 				)}
 			>
 				<div className="flex w-full items-center justify-between">
 					<div className="mt-2 flex flex-col items-center">
-						<Image
-							src="/logo_navbar.png"
-							width={108}
-							height={54}
-							className="h-[45px] w-[90px] rounded-md border border-solid border-yellow-500 md:h-[60px] md:w-[120px]"
-							alt="Finance Control EWD"
-						/>
-						<h1
-							className="mt-1 bg-clip-text text-center text-[0.6rem] text-transparent md:mt-0 md:text-[0.8rem]"
-							style={{
-								background:
-									"linear-gradient(164deg, rgba(126,86,41,1) 0%, rgba(114,95,54,1) 25%, rgba(169,157,132,1) 50%, rgba(205,191,130,1) 75%, rgba(238,198,15,1) 100%)",
-								WebkitBackgroundClip: "text",
-							}}
-						>
-							Finance Control EWD
-						</h1>
+						<Link href="/" style={{ display: "contents" }}>
+							<Image
+								src="/logo_navbar.png"
+								width={108}
+								height={54}
+								className="h-[45px] w-[90px] rounded-md border border-solid border-yellow-500 md:h-[60px] md:w-[120px]"
+								alt="Finance Control EWD"
+							/>
+
+							<h1
+								className="mt-1 bg-clip-text text-center text-[0.6rem] text-transparent md:mt-0 md:text-[0.8rem]"
+								style={{
+									background:
+										"linear-gradient(164deg, rgba(126,86,41,1) 0%, rgba(114,95,54,1) 25%, rgba(169,157,132,1) 50%, rgba(205,191,130,1) 75%, rgba(238,198,15,1) 100%)",
+									WebkitBackgroundClip: "text",
+								}}
+							>
+								Finance Control EWD
+							</h1>
+						</Link>
 					</div>
 					{/* User Button */}
 					<UserButton
@@ -136,30 +139,33 @@ const Navbar = ({ className }: { className?: string }) => {
 		return (
 			<nav
 				className={clsx(
-					"mx-6 mt-4 flex h-fit justify-between rounded-md border border-solid px-8 py-3",
+					"mx-6 mt-4 flex h-fit justify-between rounded-md border border-solid px-8 py-3 shadow-md shadow-gray-800",
 					className,
 				)}
 			>
 				{/* left side of the navbar */}
-				<div className="flex items-center">
+				<div className="flex items-center drop-shadow-sm">
 					<div className="flex h-[60px] w-[350px] gap-2">
-						<Image
-							src="/logo_navbar.png"
-							width={120}
-							height={60}
-							alt="Finance Control EWD"
-							className="rounded-md border border-solid border-yellow-500"
-						/>
-						<h1
-							className="text-1xl mt-4 bg-clip-text text-transparent"
-							style={{
-								background:
-									"linear-gradient(164deg, rgba(126,86,41,1) 0%, rgba(114,95,54,1) 25%, rgba(169,157,132,1) 50%, rgba(205,191,130,1) 75%, rgba(238,198,15,1) 100%)",
-								WebkitBackgroundClip: "text",
-							}}
-						>
-							Finance Control EWD
-						</h1>
+						<Link href="/" style={{ display: "contents" }}>
+							<Image
+								src="/logo_navbar.png"
+								width={120}
+								height={60}
+								alt="Finance Control EWD"
+								className="rounded-md border border-solid border-yellow-600"
+							/>
+
+							<h1
+								className="text-1xl mt-4 bg-clip-text text-transparent"
+								style={{
+									background:
+										"linear-gradient(164deg, rgba(126,86,41,1) 0%, rgba(114,95,54,1) 25%, rgba(169,157,132,1) 50%, rgba(205,191,130,1) 75%, rgba(238,198,15,1) 100%)",
+									WebkitBackgroundClip: "text",
+								}}
+							>
+								Finance Control EWD
+							</h1>
+						</Link>
 					</div>
 					<div className="flex items-center text-lg md:gap-4 xl:ml-24 xl:gap-24">
 						<NavLink href="/">Dashboard</NavLink>

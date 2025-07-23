@@ -53,7 +53,7 @@ const LoginPage = async () => {
 				<SignInButton>
 					<Button
 						variant="outline"
-						className="custom-active-transition transition-colors duration-500 ease-in-out active:scale-95 active:bg-primary"
+						className="custom-active-transition shadow-md shadow-gray-800 transition-all duration-500 ease-in-out hover:shadow-gray-500 active:scale-95 active:bg-primary"
 					>
 						<LogInIcon className="mr-2" />
 						Fazer login ou criar conta

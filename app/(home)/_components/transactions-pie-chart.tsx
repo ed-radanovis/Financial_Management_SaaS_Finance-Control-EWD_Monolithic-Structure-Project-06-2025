@@ -99,7 +99,7 @@ const TransactionsPieChart = ({
 	const outerRadius = isMobile ? 60 : isTablet ? 90 : 70;
 	return (
 		<Card
-			className={`ml-2 w-full flex-col bg-white bg-opacity-2 md:ml-3 xl:ml-0 ${className || ""}`}
+			className={`ml-2 w-full flex-col bg-white bg-opacity-2 shadow-md shadow-gray-800 md:ml-3 xl:ml-0 ${className || ""}`}
 		>
 			<CardContent className="flex-1 p-1 pb-0">
 				<ChartContainer

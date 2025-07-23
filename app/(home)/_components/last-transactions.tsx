@@ -35,7 +35,7 @@ const LastTransactions = ({
 	return (
 		<ScrollArea
 			className={clsx(
-				"h-[300px] rounded-md border md:h-[400px] xl:h-[75vh]",
+				"h-[300px] rounded-md border shadow-md shadow-gray-800 md:h-[400px] xl:h-[75vh]",
 				className,
 			)}
 		>
@@ -45,7 +45,7 @@ const LastTransactions = ({
 				</CardTitle>
 				<Button
 					variant="outline"
-					className="custom-active-transition-last-transaction rounded-md text-sm font-bold transition-all duration-500 ease-in-out active:scale-105 active:bg-primary md:text-xl xl:text-base"
+					className="custom-active-transition-last-transaction rounded-md text-sm font-bold shadow-md shadow-gray-800 transition-all duration-500 ease-in-out active:scale-105 active:bg-primary md:text-xl xl:text-base"
 					asChild
 				>
 					<Link href="/transactions">Ver mais</Link>

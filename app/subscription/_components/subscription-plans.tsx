@@ -50,10 +50,10 @@ const SubscriptionPlans = ({
 	const historySince = historyStartDate;
 
 	return (
-		<div className="flex items-center justify-center px-4 md:px-3 xl:px-6">
+		<div className="flex items-center justify-center px-4 pb-1 md:px-3 xl:px-6">
 			<div className="flex w-full flex-col items-center justify-center gap-6 md:mb-2 md:flex-row md:gap-3 xl:gap-6">
 				{/* Basic plan */}
-				<Card className="group h-auto w-full max-w-[480px] transition duration-500 ease-in-out hover:-translate-y-[6px] hover:scale-[1.03] md:w-[33%]">
+				<Card className="group h-auto w-full max-w-[480px] shadow-md shadow-gray-800 transition duration-500 ease-in-out hover:-translate-y-[6px] hover:scale-[1.03] md:w-[33%]">
 					<CardHeader className="md:duration-400 relative border-b border-solid bg-red-500 bg-opacity-[1.5%] py-4 transition-colors duration-500 group-hover:bg-opacity-[3%] group-active:bg-opacity-[3%] sm:py-6 md:py-8">
 						<h2 className="text-center text-lg font-semibold sm:text-xl md:text-2xl">
 							Plano Standard
@@ -113,7 +113,7 @@ const SubscriptionPlans = ({
 				</Card>
 
 				{/* Monthly Premium Plan */}
-				<Card className="group h-auto w-full max-w-[480px] transition duration-500 ease-in-out hover:-translate-y-[6px] hover:scale-[1.03] md:w-[33%]">
+				<Card className="group h-auto w-full max-w-[480px] shadow-md shadow-gray-800 transition duration-500 ease-in-out hover:-translate-y-[6px] hover:scale-[1.03] md:w-[33%]">
 					<CardHeader className="md:duration-400 relative border-b bg-yellow-500 bg-opacity-[1.5%] py-4 transition-colors duration-500 group-hover:bg-opacity-[3%] group-active:bg-opacity-[3%] sm:py-6 md:py-8">
 						<h2 className="text-center text-lg font-semibold sm:text-xl md:text-2xl">
 							Plano Premium <br />
@@ -192,7 +192,7 @@ const SubscriptionPlans = ({
 				</Card>
 
 				{/* Semi-Annual Premium Plan */}
-				<Card className="group h-auto w-full max-w-[480px] transition duration-500 ease-in-out hover:-translate-y-[6px] hover:scale-[1.03] md:w-[33%]">
+				<Card className="group h-auto w-full max-w-[480px] shadow-md shadow-gray-800 transition duration-500 ease-in-out hover:-translate-y-[6px] hover:scale-[1.03] md:w-[33%]">
 					<CardHeader className="md:duration-400 relative border-b bg-green-500 bg-opacity-[1.5%] py-4 transition-colors duration-500 group-hover:bg-opacity-[3%] group-active:bg-opacity-[3%] sm:py-6 md:py-8">
 						<h2 className="text-center text-lg font-semibold sm:text-xl md:text-2xl">
 							Plano Premium <br />
