@@ -12,26 +12,23 @@ import {
 } from "@/app/_constants/transactions";
 import { TransactionType } from "@prisma/client";
 
-class NoTransactionsError extends Error {
-	constructor(message = "No transactions found for the specified month.") {
-		super(message);
-		this.name = "NoTransactionsError";
-	}
-}
-
 // example report if API is not configured
 const DUMMY_REPORT = `...`;
+
+type GenerateReportResult =
+	| { success: true; report: string }
+	| { success: false; error: string };
 
 export const generateAiReport = async ({
 	month,
 	year,
-}: GenerateAiReportSchema) => {
+}: GenerateAiReportSchema): Promise<GenerateReportResult> => {
 	generateAiReportSchema.parse({ month, year });
 
 	// AUTH to generate report
 	const { userId } = await auth();
 	if (!userId) {
-		throw new Error("Unauthorized");
+		return { success: false, error: "Unauthorized" };
 	}
 
 	// check if the user has a premium plan
@@ -41,12 +38,12 @@ export const generateAiReport = async ({
 		user.publicMetadata.subscriptionPlan === "premium-semestral";
 
 	if (!hasPremiumPlan) {
-		throw new Error("You need a premium plan to generate AI reports");
+		return { success: false, error: "PREMIUM_PLAN_REQUIRED" };
 	}
 
 	if (!process.env.GEMINI_API_KEY) {
 		await new Promise((resolve) => setTimeout(resolve, 1000));
-		return DUMMY_REPORT; // Returns static report
+		return { success: true, report: DUMMY_REPORT };
 	}
 
 	// get transactions for the month and year
@@ -64,7 +61,7 @@ export const generateAiReport = async ({
 	});
 
 	if (transactions.length === 0) {
-		throw new Error("NO_TRANSACTIONS_FOUND_FOR_MONTH");
+		return { success: false, error: "NO_TRANSACTIONS_FOUND_FOR_MONTH" };
 	}
 
 	// sum up inflows (Deposits + Investments) and outflows (Expenses)
@@ -159,17 +156,9 @@ Inclua também uma análise das entradas, saídas, saldo e as categorias mais ga
 				},
 			},
 		);
-		return response.data.choices[0].message.content;
+		return { success: true, report: response.data.choices[0].message.content };
 	} catch (error) {
-		if (
-			error instanceof NoTransactionsError ||
-			(error instanceof Error &&
-				error.message === "NO_TRANSACTIONS_FOUND_FOR_MONTH")
-		) {
-			throw new Error("NO_TRANSACTIONS_FOUND_FOR_MONTH");
-		} else {
-			console.error("Erro ao gerar relatório. Tente novamente mais tarde:", error);
-			throw new Error("Erro ao gerar relatório. Tente novamente mais tarde.");
-		}
+		console.error("Erro ao gerar relatório com Gemini API:", error);
+		return { success: false, error: "GEMINI_API_ERROR" };
 	}
 };

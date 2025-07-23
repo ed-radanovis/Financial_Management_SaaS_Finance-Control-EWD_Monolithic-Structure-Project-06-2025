@@ -30,6 +30,10 @@ const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
 	const [reportGenerated, setReportGenerated] = useState(false);
 	const [showNoTransactionsDialog, setShowNoTransactionsDialog] =
 		useState(false);
+	const [showPremiumRequiredDialog, setShowPremiumRequiredDialog] =
+		useState(false);
+	const [showGenericErrorDialog, setShowGenericErrorDialog] = useState(false);
+
 	const searchParams = useSearchParams();
 	const year = searchParams.get("year");
 
@@ -39,24 +43,30 @@ const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
 			return;
 		}
 
-		try {
-			setReportIsLoading(true);
-			const aiReport = await generateAiReport({ month, year });
-			console.log({ aiReport });
-			setReport(aiReport);
+		setReportIsLoading(true);
+		const result = await generateAiReport({ month, year });
+
+		if (result.success) {
+			console.log({ aiReport: result.report });
+			setReport(result.report);
 			setReportGenerated(true);
-		} catch (error: unknown) {
-			if (
-				error instanceof Error &&
-				error.message === "NO_TRANSACTIONS_FOUND_FOR_MONTH"
-			) {
+		} else {
+			if (result.error === "NO_TRANSACTIONS_FOUND_FOR_MONTH") {
 				setShowNoTransactionsDialog(true);
+			} else if (result.error === "PREMIUM_PLAN_REQUIRED") {
+				setShowPremiumRequiredDialog(true);
+			} else if (result.error === "Unauthorized") {
+				console.error("Usuário não autorizado.");
+				setShowGenericErrorDialog(true);
+			} else if (result.error === "GEMINI_API_ERROR") {
+				console.error("Erro na API do Gemini:", result.error);
+				setShowGenericErrorDialog(true);
 			} else {
-				console.error("Ocorreu um erro inesperado:", error);
+				console.error("Ocorreu um erro inesperado:", result.error);
+				setShowGenericErrorDialog(true);
 			}
-		} finally {
-			setReportIsLoading(false);
 		}
+		setReportIsLoading(false);
 	};
 
 	const handlePrintReportClick = () => {
@@ -148,6 +158,8 @@ const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
 					setReport(null);
 					setReportGenerated(false);
 					setShowNoTransactionsDialog(false);
+					setShowPremiumRequiredDialog(false);
+					setShowGenericErrorDialog(false);
 				}
 			}}
 		>
@@ -233,6 +245,43 @@ const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
 								<span className="block break-words">
 									É necessário ao menos UMA transação para que seja possível a emissão do
 									relatório.
+								</span>
+							</DialogDescription>
+						</DialogHeader>
+					</DialogContent>
+				</Dialog>
+				<Dialog
+					open={showPremiumRequiredDialog}
+					onOpenChange={setShowPremiumRequiredDialog}
+				>
+					<DialogContent className="max-w-[90vw] rounded-md p-4 md:max-w-[80vw] xl:max-w-[40vw]">
+						<DialogHeader>
+							<DialogTitle className="mt-6 text-center text-xl font-bold text-yellow-400 md:text-3xl xl:mt-0 xl:text-2xl">
+								Acesso Negado
+							</DialogTitle>
+							<DialogDescription className="text-center text-base md:text-xl xl:text-lg">
+								<span className="block break-words">
+									Você precisa de um plano PREMIUM para gerar relatórios com IA.
+								</span>
+							</DialogDescription>
+						</DialogHeader>
+					</DialogContent>
+				</Dialog>
+				<Dialog
+					open={showGenericErrorDialog}
+					onOpenChange={setShowGenericErrorDialog}
+				>
+					<DialogContent className="max-w-[90vw] rounded-md p-4 md:max-w-[80vw] xl:max-w-[40vw]">
+						<DialogHeader>
+							<DialogTitle className="mt-6 text-center text-xl font-bold text-red-500 md:text-3xl xl:mt-0 xl:text-2xl">
+								Ocorreu um Erro
+							</DialogTitle>
+							<DialogDescription className="text-center text-base md:text-xl xl:text-lg">
+								<span className="block break-words">
+									Não foi possível gerar o relatório devido a um erro inesperado.
+								</span>
+								<span className="block break-words">
+									Por favor, tente novamente mais tarde.
 								</span>
 							</DialogDescription>
 						</DialogHeader>
