@@ -26,7 +26,7 @@ const ExpensesPerCategory = ({
 		return (
 			<ScrollArea
 				className={clsx(
-					"col-span-2 h-[250px] rounded-md border bg-white bg-opacity-2 p-2 md:h-[350px] xl:h-[41vh] xl:p-4",
+					"col-span-2 h-[250px] rounded-md border bg-white bg-opacity-2 p-2 shadow-md shadow-gray-800 md:h-[350px] xl:h-[41vh] xl:p-4",
 					className,
 				)}
 			>
@@ -47,7 +47,7 @@ const ExpensesPerCategory = ({
 	return (
 		<ScrollArea
 			className={clsx(
-				"col-span-2 h-[250px] rounded-md border bg-white bg-opacity-2 p-2 shadow-md shadow-gray-800 md:h-[350px] xl:h-[41vh] xl:p-4",
+				"col-span-2 h-[250px] rounded-md border bg-white bg-opacity-2 p-2 md:h-[350px] xl:h-[41vh] xl:p-4",
 				className,
 			)}
 		>

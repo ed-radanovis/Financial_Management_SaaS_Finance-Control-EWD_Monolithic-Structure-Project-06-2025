@@ -64,7 +64,7 @@ export const generateAiReport = async ({
 	});
 
 	if (transactions.length === 0) {
-		throw new NoTransactionsError();
+		throw new Error("NO_TRANSACTIONS_FOUND_FOR_MONTH");
 	}
 
 	// sum up inflows (Deposits + Investments) and outflows (Expenses)
@@ -161,8 +161,12 @@ Inclua também uma análise das entradas, saídas, saldo e as categorias mais ga
 		);
 		return response.data.choices[0].message.content;
 	} catch (error) {
-		if (error instanceof NoTransactionsError) {
-			throw error;
+		if (
+			error instanceof NoTransactionsError ||
+			(error instanceof Error &&
+				error.message === "NO_TRANSACTIONS_FOUND_FOR_MONTH")
+		) {
+			throw new Error("NO_TRANSACTIONS_FOUND_FOR_MONTH");
 		} else {
 			console.error("Erro ao gerar relatório. Tente novamente mais tarde:", error);
 			throw new Error("Erro ao gerar relatório. Tente novamente mais tarde.");

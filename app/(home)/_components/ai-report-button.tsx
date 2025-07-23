@@ -48,11 +48,11 @@ const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
 		} catch (error: unknown) {
 			if (
 				error instanceof Error &&
-				error.message === "No transactions found for the specified month."
+				error.message === "NO_TRANSACTIONS_FOUND_FOR_MONTH"
 			) {
 				setShowNoTransactionsDialog(true);
 			} else {
-				console.error(error);
+				console.error("Ocorreu um erro inesperado:", error);
 			}
 		} finally {
 			setReportIsLoading(false);
