@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import Queue from "bull";
@@ -24,185 +25,239 @@ let isFallbackMode = false;
 let nextMonthResetDate: Date | null = null;
 
 // process the webhook directly (without Redis)
-const processWebhookDirectly = async (event: Stripe.Event) => {
-	switch (event.type) {
-		case "invoice.paid": {
-			const invoice = event.data.object as Stripe.Invoice;
-			const subscriptionId = invoice.subscription as string | null;
+const processStripeEvent = async (event: Stripe.Event) => {
+	try {
+		switch (event.type) {
+			case "invoice.paid": {
+				const invoice = event.data.object as Stripe.Invoice;
+				const subscriptionId = invoice.subscription as string | null;
 
-			if (!subscriptionId) return;
+				if (!subscriptionId) {
+					console.warn("Event invoice.paid without subscriptionId. Ignoring.");
+					return;
+				}
 
-			const customerId = invoice.customer as string;
-			const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-			const clerkUserId = subscription.metadata.clerk_user_id;
+				const customerId = invoice.customer as string;
+				const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+				const clerkUserId = subscription.metadata.clerk_user_id;
 
-			if (!clerkUserId)
-				throw new Error("Clerk user ID not found in subscription metadata");
+				if (!clerkUserId)
+					throw new Error(
+						"Clerk user ID not found in subscription metadata for invoice.paid",
+					);
 
-			const priceId = subscription.items.data[0].price.id;
-			let planType = null;
-			if (priceId === process.env.STRIPE_PREMIUM_PLAN_PRICE_ID) {
-				planType = "premium-mensal";
-			} else if (priceId === process.env.STRIPE_SEMESTRAL_PLAN_PRICE_ID) {
-				planType = "premium-semestral";
+				const priceId = subscription.items.data[0].price.id;
+				let planType = null;
+				if (priceId === process.env.STRIPE_PREMIUM_PLAN_PRICE_ID) {
+					planType = "premium-mensal";
+				} else if (priceId === process.env.STRIPE_SEMESTRAL_PLAN_PRICE_ID) {
+					planType = "premium-semestral";
+				}
+
+				await clerkClient.users.updateUser(clerkUserId, {
+					privateMetadata: {
+						stripeCustomerId: customerId,
+						stripeSubscriptionId: subscriptionId,
+					},
+					publicMetadata: {
+						subscriptionPlan: planType,
+					},
+				});
+				console.log(
+					`[Webhook] User ${clerkUserId} updated to ${planType} via invoice.paid (CLERK ONLY).`,
+				);
+				break;
 			}
 
-			await clerkClient.users.updateUser(clerkUserId, {
-				privateMetadata: {
-					stripeCustomerId: customerId,
-					stripeSubscriptionId: subscriptionId,
-				},
-				publicMetadata: {
-					subscriptionPlan: planType,
-				},
-			});
-			break;
+			case "customer.subscription.deleted": {
+				const subscription = event.data.object as Stripe.Subscription;
+				const clerkUserId = subscription.metadata.clerk_user_id;
+
+				if (!clerkUserId)
+					throw new Error(
+						"Clerk user ID not found in subscription metadata for customer.subscription.deleted",
+					);
+
+				await clerkClient.users.updateUser(clerkUserId, {
+					privateMetadata: {
+						stripeCustomerId: null,
+						stripeSubscriptionId: null,
+					},
+					publicMetadata: {
+						subscriptionPlan: null,
+					},
+				});
+				console.log(
+					`[Webhook] User subscription ${clerkUserId} deleted (CLERK ONLY).`,
+				);
+				break;
+			}
+
+			case "checkout.session.completed":
+				const checkoutSession = event.data.object as Stripe.Checkout.Session;
+				console.log("Checkout Session Completed:", checkoutSession.id);
+
+				const customerId_checkout = checkoutSession.customer as string;
+				const subscriptionId_checkout = checkoutSession.subscription as
+					| string
+					| null;
+				const userId_checkout = checkoutSession.metadata?.clerk_user_id;
+
+				if (!userId_checkout) {
+					console.error("userId not found in checkout session metadata.");
+					throw new Error(
+						"Missing userId in metadata from checkout.session.completed",
+					);
+				}
+
+				if (customerId_checkout) {
+					await clerkClient.users.updateUser(userId_checkout, {
+						privateMetadata: {
+							stripeCustomerId: customerId_checkout,
+							stripeSubscriptionId: subscriptionId_checkout,
+						},
+					});
+					console.log(
+						`[Webhook] User ${userId_checkout} updated with customer ID via checkout.session.completed (CLERK ONLY).`,
+					);
+				}
+				break;
+
+			default:
+				console.log(`[Webhook] Unhandled Stripe event: ${event.type}`);
 		}
-
-		case "customer.subscription.deleted": {
-			const subscription = event.data.object as Stripe.Subscription;
-			const clerkUserId = subscription.metadata.clerk_user_id;
-
-			if (!clerkUserId)
-				throw new Error("Clerk user ID not found in subscription metadata");
-
-			await clerkClient.users.updateUser(clerkUserId, {
-				privateMetadata: {
-					stripeCustomerId: null,
-					stripeSubscriptionId: null,
-				},
-				publicMetadata: {
-					subscriptionPlan: null,
-				},
-			});
-			break;
+	} catch (error: unknown) {
+		if (error instanceof Error) {
+			console.error(`[Webhook] Error processing event ${event.type}:`, error);
+		} else {
+			console.error(
+				`[Webhook] Unknown error processing event ${event.type}:`,
+				error,
+			);
 		}
+		throw error;
 	}
 };
 
+// process up to 5 jobs simultaneously
+webhookQueue.process(5, async (job) => {
+	const { event } = job.data;
+	console.log(`[Bull Queue] Processing event: ${event.type}`);
+	await processStripeEvent(event);
+});
+
 export const POST = async (request: Request) => {
-	if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
-		return NextResponse.error();
+	if (
+		!process.env.STRIPE_SECRET_KEY ||
+		!process.env.STRIPE_WEBHOOK_SECRET ||
+		!process.env.REDIS_URL
+	) {
+		console.error("Stripe/Redis environment variables missing.");
+		return new NextResponse("Server configuration error", { status: 500 });
 	}
 
-	const signature = request.headers.get("stripe-signature");
-	if (!signature) {
-		return NextResponse.error();
+	const stripeSignature = headers().get("stripe-signature");
+	if (!stripeSignature) {
+		console.warn("No Stripe signature found.");
+		return new NextResponse("No Stripe signature found", {
+			status: 400,
+		});
 	}
 
 	const text = await request.text();
-
 	let event: Stripe.Event;
+
 	try {
 		event = stripe.webhooks.constructEvent(
 			text,
-			signature,
+			stripeSignature,
 			process.env.STRIPE_WEBHOOK_SECRET,
 		);
-	} catch {
-		return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+	} catch (err: unknown) {
+		if (err instanceof Error) {
+			console.error(`Webhook Error: Invalid signature - ${err.message}`);
+			return new NextResponse(
+				`Webhook Error: Invalid signature - ${err.message}`,
+				{ status: 400 },
+			);
+		}
+		console.error(`Webhook Error: Unknown error - ${err}`);
+		return new NextResponse(`Webhook Error: Unknown error`, { status: 400 });
 	}
 
 	// check if Redis can be reactivated
 	if (isFallbackMode && nextMonthResetDate && new Date() >= nextMonthResetDate) {
 		isFallbackMode = false;
 		nextMonthResetDate = null;
+		console.log("[Webhook] Fallback mode deactivated. Retrying Redis.");
 	}
 
 	// enqueue in Redis unless in fallback mode
 	if (!isFallbackMode) {
 		try {
 			await webhookQueue.add({ event });
+			console.log(`[Webhook] Event ${event.type} enqueued.`);
 		} catch (error: unknown) {
 			if (
 				error instanceof Error &&
-				error.message &&
 				error.message.includes("max requests limit exceeded")
 			) {
 				isFallbackMode = true;
 				const now = new Date();
 				nextMonthResetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-				await processWebhookDirectly(event);
-			} else {
-				return NextResponse.json(
-					{ error: "Failed to queue event" },
+				console.warn(
+					`[Webhook] Redis request limit exceeded. Activating fallback mode. Processing event ${event.type} directly.`,
+				);
+				await processStripeEvent(event);
+			} else if (error instanceof Error) {
+				console.error(`[Webhook] Error enqueuing event ${event.type}:`, error);
+				return new NextResponse(
+					`Internal error enqueuing event: ${error.message}`,
 					{ status: 500 },
 				);
+			} else {
+				console.error(
+					`[Webhook] Unknown error enqueuing event ${event.type}:`,
+					error,
+				);
+				return new NextResponse(`Unknown internal error enqueuing event`, {
+					status: 500,
+				});
 			}
 		}
 	} else {
 		// fallback mode: process without Redis
-		await processWebhookDirectly(event);
+		console.log(
+			`[Webhook] Processing event ${event.type} directly (fallback mode).`,
+		);
+		try {
+			await processStripeEvent(event);
+		} catch (processingError: unknown) {
+			if (processingError instanceof Error) {
+				console.error(
+					`[Webhook] Error during direct processing of event ${event.type}:`,
+					processingError,
+				);
+				return new NextResponse(
+					`Internal error processing event directly: ${processingError.message}`,
+					{ status: 500 },
+				);
+			} else {
+				console.error(
+					`[Webhook] Unknown error during direct processing of event ${event.type}:`,
+					processingError,
+				);
+				return new NextResponse(
+					`Unknown internal error processing event directly`,
+					{ status: 500 },
+				);
+			}
+		}
 	}
 
-	return NextResponse.json({ received: true });
+	// Success response to Stripe
+	console.log(
+		`[Webhook] Success: Event ${event.type} received and ready for processing.`,
+	);
+	return new NextResponse(JSON.stringify({ received: true }), { status: 200 });
 };
-
-// process up to 5 jobs simultaneously
-webhookQueue.process(5, async (job) => {
-	const { event } = job.data;
-
-	switch (event.type) {
-		case "invoice.paid": {
-			const invoice = event.data.object as Stripe.Invoice;
-			const subscriptionId = invoice.subscription as string | null; // allow null
-
-			if (!subscriptionId) {
-				return;
-			}
-
-			const customerId = invoice.customer as string;
-
-			// get subscription details
-			const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-			const clerkUserId = subscription.metadata.clerk_user_id;
-
-			if (!clerkUserId) {
-				throw new Error("Clerk user ID not found in subscription metadata");
-			}
-
-			// get the price ID used in the subscription
-			const priceId = subscription.items.data[0].price.id;
-
-			// determines the plan based on the Price ID
-			let planType = null;
-			if (priceId === process.env.STRIPE_PREMIUM_PLAN_PRICE_ID) {
-				planType = "premium-mensal";
-			} else if (priceId === process.env.STRIPE_SEMESTRAL_PLAN_PRICE_ID) {
-				planType = "premium-semestral";
-			}
-
-			// update user in Clerk
-			await clerkClient.users.updateUser(clerkUserId, {
-				privateMetadata: {
-					stripeCustomerId: customerId,
-					stripeSubscriptionId: subscriptionId,
-				},
-				publicMetadata: {
-					subscriptionPlan: planType,
-				},
-			});
-			break;
-		}
-
-		case "customer.subscription.deleted": {
-			const subscription = event.data.object as Stripe.Subscription;
-			const clerkUserId = subscription.metadata.clerk_user_id;
-
-			if (!clerkUserId) {
-				throw new Error("Clerk user ID not found in subscription metadata");
-			}
-
-			await clerkClient.users.updateUser(clerkUserId, {
-				privateMetadata: {
-					stripeCustomerId: null,
-					stripeSubscriptionId: null,
-				},
-				publicMetadata: {
-					subscriptionPlan: null,
-				},
-			});
-			break;
-		}
-	}
-});

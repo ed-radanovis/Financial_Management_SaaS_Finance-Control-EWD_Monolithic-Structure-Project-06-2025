@@ -33,7 +33,7 @@ export const createStripeCheckout = async (
 		payment_method_types: ["card"],
 		mode: "subscription",
 		success_url: `${process.env.APP_URL}/confirmation`,
-		cancel_url: `${process.env.APP_URL}/ cancellation`,
+		cancel_url: `${process.env.APP_URL}/cancellation`,
 		subscription_data: {
 			metadata: {
 				clerk_user_id: userId,
