@@ -93,7 +93,7 @@ const processStripeEvent = async (event: Stripe.Event) => {
 				break;
 			}
 
-			case "checkout.session.completed":stringify(event, null, 2));
+			case "checkout.session.completed":
 				const checkoutSession = event.data.object as Stripe.Checkout.Session;
 				console.log("Checkout Session Completed:", checkoutSession.id);
 
