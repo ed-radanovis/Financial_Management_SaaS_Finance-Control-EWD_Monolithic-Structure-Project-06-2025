@@ -1,4 +1,3 @@
-// middleware.ts
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
@@ -17,7 +16,7 @@ export default clerkMiddleware((auth, req) => {
 	}
 
 	if (!isPublicRoute(req) && !auth().userId) {
-		const signInUrl = new URL("/sign-in", req.url);
+		const signInUrl = new URL("/login", req.url);
 		return NextResponse.redirect(signInUrl);
 	}
 });
@@ -25,3 +24,5 @@ export default clerkMiddleware((auth, req) => {
 export const config = {
 	matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
 };
+
+

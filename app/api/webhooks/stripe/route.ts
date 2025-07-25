@@ -93,7 +93,7 @@ const processStripeEvent = async (event: Stripe.Event) => {
 				break;
 			}
 
-			case "checkout.session.completed":
+			case "checkout.session.completed":stringify(event, null, 2));
 				const checkoutSession = event.data.object as Stripe.Checkout.Session;
 				console.log("Checkout Session Completed:", checkoutSession.id);
 
@@ -261,3 +261,4 @@ export const POST = async (request: Request) => {
 	);
 	return new NextResponse(JSON.stringify({ received: true }), { status: 200 });
 };
+
