@@ -34,11 +34,18 @@ export const createStripeCheckout = async (
 		mode: "subscription",
 		success_url: `${process.env.APP_URL}/confirmation`,
 		cancel_url: `${process.env.APP_URL}/cancellation`,
+
 		subscription_data: {
 			metadata: {
 				clerk_user_id: userId,
 				plan_type: planType,
+				price_id: priceId,
 			},
+		},
+		metadata: {
+			clerk_user_id: userId,
+			plan_type: planType,
+			price_id: priceId,
 		},
 		line_items: [
 			{

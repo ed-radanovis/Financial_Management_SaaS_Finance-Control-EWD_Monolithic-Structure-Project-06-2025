@@ -53,7 +53,7 @@ const fetchUserWithRetry = async (
 ) => {
 	for (let attempt = 1; attempt <= retries; attempt++) {
 		try {
-			const user = await clerkClient.users.getUser(userId);
+			const user = await clerkClient().users.getUser(userId);
 			return user;
 		} catch {
 			if (attempt === retries) {

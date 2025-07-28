@@ -10,7 +10,7 @@ export const canUserViewHistory = async (): Promise<{
 		throw new Error("Unauthorized");
 	}
 
-	const user = await clerkClient.users.getUser(userId);
+	const user = await clerkClient().users.getUser(userId);
 
 	const userPlan = user.publicMetadata.subscriptionPlan;
 	if (userPlan === "premium-mensal" || userPlan === "premium-semestral") {

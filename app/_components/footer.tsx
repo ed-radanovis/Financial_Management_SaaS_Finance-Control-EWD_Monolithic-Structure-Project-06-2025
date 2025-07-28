@@ -8,7 +8,7 @@ interface FooterProps {
 }
 
 const Footer: React.FC<FooterProps> = ({ className }) => {
-	const totalUsers = clerkClient.users.getCount() || 0;
+	const totalUsers = clerkClient().users.getCount() || 0;
 
 	return (
 		<footer

@@ -47,14 +47,14 @@ const processStripeEvent = async (event: Stripe.Event) => {
 					);
 
 				const priceId = subscription.items.data[0].price.id;
-				let planType = null;
+				let planType: string | null = null;
 				if (priceId === process.env.STRIPE_PREMIUM_PLAN_PRICE_ID) {
 					planType = "premium-mensal";
 				} else if (priceId === process.env.STRIPE_SEMESTRAL_PLAN_PRICE_ID) {
 					planType = "premium-semestral";
 				}
 
-				await clerkClient.users.updateUser(clerkUserId, {
+				await clerkClient().users.updateUser(clerkUserId, {
 					privateMetadata: {
 						stripeCustomerId: customerId,
 						stripeSubscriptionId: subscriptionId,
@@ -78,7 +78,7 @@ const processStripeEvent = async (event: Stripe.Event) => {
 						"Clerk user ID not found in subscription metadata for customer.subscription.deleted",
 					);
 
-				await clerkClient.users.updateUser(clerkUserId, {
+				await clerkClient().users.updateUser(clerkUserId, {
 					privateMetadata: {
 						stripeCustomerId: null,
 						stripeSubscriptionId: null,
@@ -93,35 +93,49 @@ const processStripeEvent = async (event: Stripe.Event) => {
 				break;
 			}
 
-			case "checkout.session.completed":
+			case "checkout.session.completed": {
 				const checkoutSession = event.data.object as Stripe.Checkout.Session;
 				console.log("Checkout Session Completed:", checkoutSession.id);
 
-				const customerId_checkout = checkoutSession.customer as string;
-				const subscriptionId_checkout = checkoutSession.subscription as
-					| string
-					| null;
-				const userId_checkout = checkoutSession.metadata?.clerk_user_id;
+				const customerId = checkoutSession.customer as string;
+				const subscriptionId = checkoutSession.subscription as string | null;
+				const userId = checkoutSession.metadata?.clerk_user_id;
 
-				if (!userId_checkout) {
+				if (!userId) {
 					console.error("userId not found in checkout session metadata.");
 					throw new Error(
 						"Missing userId in metadata from checkout.session.completed",
 					);
 				}
 
-				if (customerId_checkout) {
-					await clerkClient.users.updateUser(userId_checkout, {
-						privateMetadata: {
-							stripeCustomerId: customerId_checkout,
-							stripeSubscriptionId: subscriptionId_checkout,
-						},
-					});
-					console.log(
-						`[Webhook] User ${userId_checkout} updated with customer ID via checkout.session.completed (CLERK ONLY).`,
-					);
+				let planType: string | null = null;
+				if (
+					checkoutSession.metadata?.price_id ===
+					process.env.STRIPE_PREMIUM_PLAN_PRICE_ID
+				) {
+					planType = "premium-mensal";
+				} else if (
+					checkoutSession.metadata?.price_id ===
+					process.env.STRIPE_SEMESTRAL_PLAN_PRICE_ID
+				) {
+					planType = "premium-semestral";
 				}
+
+				await clerkClient().users.updateUser(userId, {
+					privateMetadata: {
+						stripeCustomerId: customerId,
+						stripeSubscriptionId: subscriptionId,
+					},
+					publicMetadata: {
+						subscriptionPlan: planType,
+					},
+				});
+
+				console.log(
+					`[Webhook] User ${userId} updated with customer ID and plan ${planType} via checkout.session.completed (CLERK ONLY).`,
+				);
 				break;
+			}
 
 			default:
 				console.log(`[Webhook] Unhandled Stripe event: ${event.type}`);
@@ -261,4 +275,3 @@ export const POST = async (request: Request) => {
 	);
 	return new NextResponse(JSON.stringify({ received: true }), { status: 200 });
 };
-

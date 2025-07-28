@@ -32,7 +32,7 @@ export const generateAiReport = async ({
 	}
 
 	// check if the user has a premium plan
-	const user = await clerkClient.users.getUser(userId);
+	const user = await clerkClient().users.getUser(userId);
 	const hasPremiumPlan =
 		user.publicMetadata.subscriptionPlan === "premium-mensal" ||
 		user.publicMetadata.subscriptionPlan === "premium-semestral";

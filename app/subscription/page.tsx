@@ -26,7 +26,7 @@ const SubscriptionPage = async () => {
 		redirect("/login");
 	}
 
-	const user = await clerkClient.users.getUser(userId);
+	const user = await clerkClient().users.getUser(userId);
 	const currentMonthTransactions = await getCurrentMonthTransactions();
 
 	const userCreationDate = new Date(user.createdAt);

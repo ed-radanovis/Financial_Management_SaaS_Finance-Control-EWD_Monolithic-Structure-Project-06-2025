@@ -27,7 +27,7 @@ const TransactionsPage = async () => {
 	}
 
 	// fetch user and check subscription
-	const user = await clerkClient.users.getUser(userId);
+	const user = await clerkClient().users.getUser(userId);
 	const userPlan =
 		typeof user.publicMetadata.subscriptionPlan === "string"
 			? user.publicMetadata.subscriptionPlan
