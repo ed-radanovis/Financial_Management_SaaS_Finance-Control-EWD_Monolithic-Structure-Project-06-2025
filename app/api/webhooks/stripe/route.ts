@@ -11,10 +11,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 const webhookQueue = new Queue("webhook-processing", process.env.REDIS_URL!, {
 	redis: { tls: { rejectUnauthorized: false } },
 	defaultJobOptions: {
-		attempts: 3,
+		attempts: 5,
 		backoff: {
 			type: "exponential",
-			delay: 1000,
+			delay: 3000,
 		},
 	},
 });
