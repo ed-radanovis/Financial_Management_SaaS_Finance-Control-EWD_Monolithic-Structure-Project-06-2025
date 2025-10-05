@@ -111,17 +111,20 @@ export const generateAiReport = async ({
 	const financialSummary = `
 ### Sumário Financeiro:
 
-  - **Entradas:**
-  - Depósitos: R$ ${totalDeposits.toFixed(2).replace(".", ",")}
-  - Investimentos: R$ ${totalInvestments.toFixed(2).replace(".", ",")}
-    - **Total Entradas:** R$ ${totalEntradas.toFixed(2).replace(".", ",")}
+	- **Entradas:**
+	- Depósitos: R$ ${totalDeposits.toFixed(2).replace(".", ",")}
+	- Investimentos: R$ ${totalInvestments.toFixed(2).replace(".", ",")}
+	- **Total Entradas:** R$ ${totalEntradas.toFixed(2).replace(".", ",")}
 
-  - **Saídas:**
-  - Despesas: R$ ${totalExpenses.toFixed(2).replace(".", ",")}
-    - **Total Saídas:** R$ ${totalSaidas.toFixed(2).replace(".", ",")}
+	- **Saídas:**
+	- Despesas: R$ ${totalExpenses.toFixed(2).replace(".", ",")}
+	- **Total Saídas:** R$ ${totalSaidas.toFixed(2).replace(".", ",")}
 
-  - **Saldo Final:** R$ ${saldoFinal.toFixed(2).replace(".", ",")}
+	- **Saldo Final:** R$ ${saldoFinal.toFixed(2).replace(".", ",")}
 `;
+
+	const systemInstruction =
+		"Você é um especialista em gestão e organização de finanças pessoais. Você ajuda as pessoas a organizarem melhor as suas finanças.";
 
 	const content = `Gere um relatório com insights sobre as minhas finanças. Abaixo estão as transações apresentadas como uma lista:
 
@@ -133,30 +136,36 @@ Inclua também uma análise das entradas, saídas, saldo e as categorias mais ga
 
 	try {
 		// call to Gemini API
+
 		const response = await axios.post(
-			"https://generativelanguage.googleapis.com/v1beta/chat/completions",
+			// endpoit para openai
+			// "https://generativelanguage.googleapis.com/v1beta/chat/completions",
+
+			// endpoit para gemini
+			`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
 			{
-				model: "gemini-1.5-flash",
-				messages: [
-					{
-						role: "system",
-						content:
-							"Você é um especialista em gestão e organização de finanças pessoais. Você ajuda as pessoas a organizarem melhor as suas finanças.",
-					},
+				model: "gemini-2.5-flash",
+				contents: [
 					{
 						role: "user",
-						content,
+						parts: [
+							{
+								text: `${systemInstruction}\n\n${content}`,
+							},
+						],
 					},
 				],
 			},
 			{
 				headers: {
 					"Content-Type": "application/json",
-					Authorization: `Bearer ${process.env.GEMINI_API_KEY}`,
 				},
 			},
 		);
-		return { success: true, report: response.data.choices[0].message.content };
+		return {
+			success: true,
+			report: response.data.candidates[0].content.parts[0].text,
+		};
 	} catch (error) {
 		console.error("Erro ao gerar relatório com Gemini API:", error);
 		return { success: false, error: "GEMINI_API_ERROR" };
